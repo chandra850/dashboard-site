@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training & Onboarding Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── SHARED ROOT VARIABLES ─── */
+        :root {
+            --gold:         #c9a84c;
+            --gold-light:   #e8c97a;
+            --gold-dim:     #8a6d2f;
+            --gold-subtle:  rgba(201,168,76,0.12);
+            --gold-border:  rgba(201,168,76,0.22);
+            --navy:         #0d1f3c;
+            --navy2:        #0f2447;
+            --navy3:        #132d56;
+            --navy4:        #1a3565;
+            --surface:      #112240;
+            --surface2:     #0e1e3a;
+            --border:       rgba(255,255,255,0.07);
+            --border-gold:  rgba(201,168,76,0.22);
+            --text:         #e8dfc8;
+            --text-muted:   #6b7d9e;
+            --text-dim:     #c0bfae;
+            --success:      #4db88a;
+            --danger:       #e05c5c;
+            --bar-bg:       rgba(255,255,255,0.06);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            background: linear-gradient(135deg, #034f96 0%, #ffffff 100%);
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border-gold);
+            padding: 0 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 4px 32px rgba(5,12,26,0.5);
+        }
+        .header-logo { display: flex; align-items: center; gap: 16px; }
+        .header-logo img { height: 50px; width: auto; object-fit: contain; mix-blend-mode: lighten; background: transparent; }
+        .header-divider { width: 1px; height: 30px; background: var(--border-gold); }
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700; font-size: 1.3rem; color: var(--gold);
+            letter-spacing: 0.05em;
+            position: absolute; left: 50%; transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .header-badge {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--gold-subtle); border: 1px solid var(--border-gold);
+            color: var(--gold); font-size: 10.5px; font-weight: 600;
+            padding: 5px 14px; border-radius: 20px;
+            letter-spacing: 0.07em; text-transform: uppercase;
+        }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+        .details-link {
+            display: flex; align-items: center; gap: 7px;
+            color: rgba(255,255,255,0.75); font-size: 10.5px; font-weight: 500;
+            letter-spacing: 0.05em; text-decoration: none;
+            padding: 5px 12px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px; margin-left: 12px; transition: all 0.3s ease;
+            animation: shimmer 2.5s ease-in-out infinite; white-space: nowrap;
+        }
+        .details-link:hover { color: var(--gold); border-color: var(--gold-border); background: var(--gold-subtle); }
+        .details-arrow { display: inline-block; animation: arrowBounce 1.2s ease-in-out infinite; }
+
+        /* ─── HEADER RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .header { padding: 0 16px; height: auto; min-height: 56px; flex-wrap: wrap; gap: 8px; padding-top: 10px; padding-bottom: 10px; }
+            .header-title { position: static; transform: none; font-size: 1rem; order: 3; width: 100%; text-align: center; padding-bottom: 6px; }
+            .header-logo img { height: 36px; }
+            .header-divider { display: none; }
+            .header-badge { font-size: 9px; padding: 4px 10px; }
+            .details-link { font-size: 9px; padding: 4px 9px; margin-left: 6px; }
+        }
+        @media (max-width: 480px) {
+            .header-title { font-size: 0.88rem; }
+            .details-link .details-arrow { display: none; }
+        }
+
+        @keyframes shimmer { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+        @keyframes arrowBounce { 0%,100% { transform: translateX(0px); } 50% { transform: translateX(4px); } }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.75); } }
+
+        /* ─── TAB NAV ─── */
+        .tab-nav {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border-gold);
+            padding: 0 44px;
+            display: flex;
+            gap: 0;
+            position: sticky;
+            top: 70px;
+            z-index: 150;
+        }
+        .tab-btn {
+            background: none; border: none; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 14px 28px; border-bottom: 3px solid transparent;
+            transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+            position: relative;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .tab-icon { font-size: 14px; }
+        @media (max-width: 768px) {
+            .tab-nav { padding: 0 8px; top: 0; position: sticky; overflow-x: auto; scrollbar-width: none; }
+            .tab-nav::-webkit-scrollbar { display: none; }
+            .tab-btn { padding: 12px 16px; font-size: 10px; gap: 5px; white-space: nowrap; flex-shrink: 0; }
+            .tab-icon { font-size: 13px; }
+        }
+
+        /* ─── TAB PANELS ─── */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ═══════════════════════════════════════════════
+           TAB 1 — TRAINING PERFORMANCE
+        ═══════════════════════════════════════════════ */
+
+        /* LEFT SIDEBAR */
+        .cal-sidebar {
+            background: var(--surface); border-radius: 16px; border: 1px solid var(--border-gold);
+            padding: 18px; position: sticky; top: 118px;
+            box-shadow: 0 4px 20px rgba(5,12,26,0.3);
+            max-height: calc(100vh - 150px); overflow-y: auto;
+        }
+        .cal-sidebar::-webkit-scrollbar { width: 4px; }
+        .cal-sidebar::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+        .side-header {
+            font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700;
+            color: var(--gold); margin-bottom: 4px; letter-spacing: 0.03em;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #e05c5c; animation: pulse 1.5s infinite; flex-shrink: 0; }
+        .side-date {
+            font-size: 9.5px; color: var(--text-muted); font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-gold);
+        }
+        .cal-event {
+            display: flex; gap: 10px; padding: 9px 11px; border-radius: 9px;
+            margin-bottom: 7px; border-left: 3px solid var(--border);
+            background: rgba(255,255,255,0.03); transition: all 0.2s;
+        }
+        .cal-event:hover { background: rgba(255,255,255,0.07); transform: translateX(2px); }
+        .cal-event.ev-upcoming { border-left-color: var(--gold); }
+        .cal-event.ev-ongoing  { border-left-color: var(--success); background: rgba(77,184,138,0.07); }
+        .cal-event.ev-past     { border-left-color: rgba(255,255,255,0.1); opacity: 0.45; }
+        .cal-event-body { flex: 1; min-width: 0; }
+        .ev-time { font-size: 10px; font-weight: 700; display: block; margin-bottom: 2px; }
+        .ev-upcoming .ev-time { color: var(--gold); }
+        .ev-ongoing  .ev-time { color: var(--success); }
+        .ev-past     .ev-time { color: var(--text-muted); }
+        .ev-title { font-size: 11px; font-weight: 600; color: var(--text); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ev-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; align-self: center; flex-shrink: 0; text-transform: uppercase; }
+        .ev-ongoing  .ev-badge { background: rgba(77,184,138,0.2);  color: var(--success); }
+        .ev-upcoming .ev-badge { background: rgba(201,168,76,0.15); color: var(--gold); }
+        .ev-past     .ev-badge { display: none; }
+
+        /* PAGE & LAYOUT */
+        .page-wrap { max-width: 1600px; margin: 0 auto; padding: 32px 24px 60px; }
+        .tp-main-layout { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
+        .dashboard-area { min-width: 0; }
+        .cal-sidebar { display: none !important; }
+        @media (max-width: 900px) { .tp-main-layout { grid-template-columns: 1fr; } }
+
+        /* Training Performance: two-column portrait layout */
+        .tp-content-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .tp-scorecard-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: sticky;
+            top: 118px;
+            background: transparent;
+        }
+        .tp-scorecard-col .g-card {
+            margin-bottom: 0;
+        }
+        .tp-scorecard-col .g-val { font-size: 2.2rem; }
+        .tp-trainer-col { min-width: 0; }
+        /* Override trainer-grid to allow 2 per row nicely */
+        .tp-trainer-col .trainer-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        @media (max-width: 800px) {
+            .tp-content-layout { grid-template-columns: 1fr; }
+            .tp-scorecard-col { flex-direction: row; flex-wrap: wrap; position: static; }
+            .tp-scorecard-col .g-card { flex: 1 1 140px; }
+        }
+
+        /* CONTROLS */
+        .controls-card {
+            background: var(--surface); border-radius: 14px; padding: 22px 26px;
+            border: 1px solid var(--border); margin-bottom: 26px;
+            display: grid; grid-template-columns: 155px 155px 210px 1fr auto;
+            gap: 18px; align-items: end;
+            box-shadow: 0 4px 24px rgba(5,12,26,0.35);
+        }
+        @media (max-width: 900px) {
+            .controls-card { grid-template-columns: 1fr 1fr; padding: 16px 18px; gap: 14px; }
+            .controls-card .btn-group { grid-column: 1 / -1; justify-content: stretch; }
+            .controls-card .btn-group .btn-gen,
+            .controls-card .btn-group .btn-ref,
+            .controls-card .btn-group .btn-pdf { flex: 1; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .page-wrap { padding: 16px 12px 80px; }
+            .controls-card { grid-template-columns: 1fr; gap: 12px; padding: 14px 14px; }
+            .controls-card .btn-group { flex-direction: column; }
+            .controls-card .btn-group .btn-gen,
+            .controls-card .btn-group .btn-ref,
+            .controls-card .btn-group .btn-pdf { width: 100%; height: 44px; }
+        }
+        .input-box { display: flex; flex-direction: column; gap: 7px; }
+        label {
+            font-size: 9.5px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-dim);
+        }
+        input[type="date"], .anchor {
+            padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 12.5px; font-family: 'Inter', sans-serif; font-weight: 500;
+            height: 40px; color: var(--text); background: var(--navy3);
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none; color-scheme: dark;
+        }
+        input[type="date"]:focus { border-color: var(--gold-dim); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+        .dropdown-check-list { position: relative; width: 100%; }
+        .anchor { cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .anchor::after { content: '▾'; font-size: 11px; color: var(--gold-dim); flex-shrink: 0; margin-left: 8px; }
+        .items {
+            padding: 6px; display: none; position: absolute;
+            background: var(--navy3); width: 100%; z-index: 5000;
+            border: 1px solid var(--border-gold); border-radius: 10px;
+            max-height: 200px; overflow-y: auto;
+            list-style: none; margin: 5px 0 0 0;
+            box-shadow: 0 16px 40px rgba(5,12,26,0.6);
+        }
+        @media (max-width: 480px) {
+            .items { position: fixed; left: 12px; right: 12px; width: auto; max-height: 50vh; }
+        }
+        .items li label {
+            font-size: 12px; font-weight: 500; text-transform: none; letter-spacing: 0;
+            color: var(--text); display: flex; align-items: center; gap: 8px;
+            padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+        }
+        .items li label:hover { background: var(--navy4); }
+        .visible .items { display: block; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-gen {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: var(--navy); font-family: 'Inter', sans-serif; font-weight: 700;
+            height: 40px; padding: 0 26px; border-radius: 8px; border: none;
+            cursor: pointer; font-size: 12.5px; letter-spacing: 0.04em;
+            transition: opacity 0.2s, transform 0.1s; box-shadow: 0 2px 12px rgba(201,168,76,0.25);
+        }
+        .btn-gen:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-ref {
+            background: transparent; color: var(--gold); font-family: 'Inter', sans-serif; font-weight: 600;
+            height: 40px; padding: 0 18px; border-radius: 8px;
+            border: 1px solid var(--border-gold); cursor: pointer; font-size: 12.5px; transition: background 0.2s;
+        }
+        .btn-ref:hover { background: var(--gold-subtle); }
+        .btn-pdf {
+            background: transparent; color: var(--text-muted); font-family: 'Inter', sans-serif; font-weight: 600;
+            height: 40px; padding: 0 18px; border-radius: 8px;
+            border: 1px solid var(--border); cursor: pointer; font-size: 12.5px;
+            display: flex; align-items: center; gap: 7px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        .btn-pdf:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-pdf svg { flex-shrink: 0; }
+
+        /* SUMMARY CARDS — Glass Morphism */
+        .grand-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-bottom: 28px; }
+        @media (max-width: 700px) { .grand-summary { grid-template-columns: 1fr; gap: 12px; } }
+        @media (min-width: 480px) and (max-width: 700px) { .grand-summary { grid-template-columns: repeat(3,1fr); } }
+        .g-card {
+            position: relative; border-radius: 20px; padding: 22px 24px 18px;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 8px 32px rgba(5,12,26,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+            transition: transform 0.25s, box-shadow 0.25s;
+            overflow: hidden;
+        }
+        /* top-left glare highlight */
+        .g-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 48%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 20px 20px 0 0; pointer-events: none;
+        }
+        .g-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(5,12,26,0.55), inset 0 1px 0 rgba(255,255,255,0.3); }
+        /* Tinted glass per card — stronger colour */
+        #g-comp-box { background: linear-gradient(145deg, rgba(26,158,110,0.55) 0%, rgba(26,158,110,0.28) 100%); border-color: rgba(77,184,138,0.55); box-shadow: 0 8px 32px rgba(26,158,110,0.25), inset 0 1px 0 rgba(255,255,255,0.25); }
+        #g-canc-box { background: linear-gradient(145deg, rgba(192,57,43,0.55) 0%, rgba(192,57,43,0.28) 100%);  border-color: rgba(224,92,92,0.55);  box-shadow: 0 8px 32px rgba(192,57,43,0.25), inset 0 1px 0 rgba(255,255,255,0.25); }
+        #g-time-box { background: linear-gradient(145deg, rgba(26,58,122,0.60) 0%, rgba(201,168,76,0.30) 100%);  border-color: rgba(201,168,76,0.50);  box-shadow: 0 8px 32px rgba(26,58,122,0.30), inset 0 1px 0 rgba(255,255,255,0.25); }
+        .g-card::after {
+            content: attr(data-num); position: absolute; right: 16px; bottom: -8px;
+            font-family: 'Playfair Display', serif; font-size: 5rem; font-weight: 900;
+            opacity: 0.12; color: #fff; pointer-events: none; line-height: 1;
+        }
+        .g-icon { font-size: 20px; margin-bottom: 12px; display: block; opacity: 0.75; }
+        .g-val { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; display: block; line-height: 1; margin-bottom: 10px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+        .g-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: rgba(255,255,255,0.65); }
+        @media (max-width: 480px) {
+            .g-card { padding: 16px 14px 14px; border-radius: 14px; }
+            .g-val  { font-size: 2.2rem; }
+            .g-icon { font-size: 16px; margin-bottom: 8px; }
+        }
+
+        /* TRAINER GRID */
+        .trainer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 22px; }
+        .trainer-card {
+            background: var(--surface); border-radius: 16px; padding: 26px;
+            border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(5,12,26,0.3);
+            transition: box-shadow 0.25s, border-color 0.25s;
+        }
+        .trainer-card:hover { box-shadow: 0 10px 40px rgba(5,12,26,0.5); border-color: var(--border-gold); }
+        .trainer-name {
+            font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700;
+            text-align: center; color: var(--gold); margin-bottom: 20px; padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-gold); letter-spacing: 0.02em;
+        }
+        .report-split { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+        @media (max-width: 640px) {
+            .trainer-grid { grid-template-columns: 1fr; }
+            .trainer-card { padding: 18px 14px; }
+            .report-split { grid-template-columns: 1fr; gap: 14px; }
+        }
+        .col-title {
+            font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.13em;
+            margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .col-comp { color: var(--success); border-color: rgba(77,184,138,0.25); }
+        .col-canc { color: var(--danger); border-color: rgba(224,92,92,0.25); }
+        .timeline-container { display: flex; gap: 10px; margin-bottom: 14px; align-items: stretch; }
+        .date-column {
+            writing-mode: vertical-rl; transform: rotate(180deg);
+            text-align: center; width: 20px; min-width: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-weight: 600; font-size: 9.5px; letter-spacing: 0.04em;
+        }
+        .line-column { display: flex; flex-direction: column; align-items: center; position: relative; width: 14px; }
+        .v-line { width: 1px; background: var(--border); flex-grow: 1; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--surface); position: absolute; top: 12px; left: -3px; z-index: 2; }
+        .dot-comp { background: var(--success); box-shadow: 0 0 6px rgba(77,184,138,0.5); }
+        .dot-canc { background: var(--danger); box-shadow: 0 0 6px rgba(224,92,92,0.45); }
+        .client-list { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+        .t-entry { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; color: var(--text); }
+        .c-name { flex-shrink:1; overflow:hidden; white-space:normal; word-break:break-word; color: var(--text-dim); }
+        .prog-track { flex-grow:1; height:4px; background:var(--bar-bg); border-radius:10px; overflow:hidden; min-width:40px; }
+        .prog-fill { height:100%; border-radius:10px; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+        .m-val { min-width:33px; text-align:right; color:var(--gold); font-weight:700; font-size:11px; }
+        .t-count { color:var(--danger); font-weight:700; font-size:11px; margin-left:2px; opacity:0.85; }
+        .col-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+        .dot-green { background:var(--success); }
+        .dot-red { background:var(--danger); }
+        .empty-state { grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted); font-size:14px; }
+
+        /* PDF FOOTER */
+        .pdf-footer { display: none; margin-top: 40px; padding: 18px 28px; border-top: 1px solid var(--border-gold); justify-content: space-between; align-items: center; }
+        .pdf-footer-left { display: flex; align-items: center; gap: 12px; }
+        .pdf-footer-left img { height: 30px; filter: brightness(0) invert(1); }
+        .pdf-footer-right { text-align: right; }
+        .pdf-footer-name { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: var(--gold); }
+        .pdf-footer-role { font-size: 10px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.04em; }
+        .pdf-footer-email { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+        /* ═══════════════════════════════════════════════
+           TAB 2 — ONBOARDING STATUS (dark theme)
+        ═══════════════════════════════════════════════ */
+        .ob-wrap { padding: 28px 28px 60px; }
+
+        /* Controls bar */
+        .ob-controls-bar {
+            background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
+            padding: 14px 22px; display: flex; align-items: center; gap: 14px;
+            margin-bottom: 22px; box-shadow: 0 4px 24px rgba(5,12,26,0.35);
+            flex-wrap: wrap;
+        }
+        @media (max-width: 640px) {
+            .ob-wrap { padding: 16px 12px 80px; }
+            .ob-controls-bar { gap: 10px; padding: 12px 14px; }
+            .ob-vdiv { display: none; }
+            #ob-lastUpdate { width: 100%; text-align: center; margin-left: 0; }
+            #ob-btn-pdf { width: 100%; justify-content: center; margin-left: 0 !important; }
+        }
+        .ob-sublabel { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--gold-dim); }
+        .ob-vdiv { width:1px; height:20px; background:var(--border-gold); }
+        .ob-select {
+            padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+            background: var(--navy3); font-size: 12px; font-family: 'Inter', sans-serif;
+            font-weight: 500; color: var(--text); outline: none; height: 34px;
+            transition: border-color 0.2s;
+        }
+        .ob-select:focus { border-color: var(--gold-dim); }
+        .ob-btn-refresh {
+            background: transparent; color: var(--gold); font-family: 'Inter', sans-serif;
+            font-weight: 600; height: 34px; padding: 0 16px; border-radius: 8px;
+            border: 1px solid var(--border-gold); cursor: pointer; font-size: 12px;
+            transition: background 0.2s;
+        }
+        .ob-btn-refresh:hover { background: var(--gold-subtle); }
+        #ob-lastUpdate { font-size: 10px; color: var(--text-muted); margin-left: auto; letter-spacing: 0.04em; }
+
+        /* Score cards — Glass Morphism */
+        .ob-score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 22px; }
+        @media (max-width: 900px) { .ob-score-grid { grid-template-columns: repeat(2,1fr); gap: 12px; } }
+        @media (max-width: 480px)  { .ob-score-grid { grid-template-columns: repeat(2,1fr); gap: 10px; } }
+        .ob-score-card {
+            position: relative; border-radius: 20px; padding: 20px 20px 16px;
+            overflow: hidden; cursor: pointer;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 8px 32px rgba(5,12,26,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        /* top glare */
+        .ob-score-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 46%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 20px 20px 0 0; pointer-events: none; z-index: 0;
+        }
+        .ob-score-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(5,12,26,0.55), inset 0 1px 0 rgba(255,255,255,0.3); }
+        /* Tinted glass per card — stronger colour */
+        .ob-sc-total   { background: linear-gradient(145deg, rgba(26,58,122,0.62) 0%, rgba(26,58,122,0.32) 100%);   border-color: rgba(100,140,255,0.55); box-shadow: 0 8px 32px rgba(26,58,122,0.30), inset 0 1px 0 rgba(255,255,255,0.25); }
+        .ob-sc-tip     { background: linear-gradient(145deg, rgba(176,125,18,0.62) 0%, rgba(176,125,18,0.30) 100%);  border-color: rgba(201,168,76,0.58);  box-shadow: 0 8px 32px rgba(176,125,18,0.28), inset 0 1px 0 rgba(255,255,255,0.25); }
+        .ob-sc-await   { background: linear-gradient(145deg, rgba(192,57,43,0.62) 0%, rgba(192,57,43,0.30) 100%);    border-color: rgba(224,92,92,0.58);   box-shadow: 0 8px 32px rgba(192,57,43,0.28), inset 0 1px 0 rgba(255,255,255,0.25); }
+        .ob-sc-onboard { background: linear-gradient(145deg, rgba(26,158,110,0.62) 0%, rgba(26,158,110,0.30) 100%);  border-color: rgba(77,184,138,0.58);  box-shadow: 0 8px 32px rgba(26,158,110,0.28), inset 0 1px 0 rgba(255,255,255,0.25); }
+        .ob-score-card::after {
+            content: attr(data-icon); position: absolute; right: 12px; bottom: -10px;
+            font-size: 4rem; opacity: 0.13; pointer-events: none; line-height: 1; z-index: 0;
+        }
+        .ob-sc-icon { font-size: 17px; margin-bottom: 8px; display: block; opacity: 0.80; position: relative; z-index: 1; }
+        .ob-sc-val {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900;
+            display: block; line-height: 1; margin-bottom: 7px;
+            color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+            position: relative; z-index: 1;
+        }
+        @media (max-width: 480px) { .ob-sc-val { font-size: 1.9rem; } }
+        .ob-sc-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: rgba(255,255,255,0.65); position: relative; z-index: 1; }
+
+        /* Main layout */
+        .ob-main-layout { display: grid; grid-template-columns: 1fr 272px; gap: 18px; align-items: start; }
+        @media (max-width: 900px) {
+            .ob-main-layout { grid-template-columns: 1fr; }
+            .ob-sidebar { position: static; flex-direction: row; flex-wrap: wrap; }
+            .ob-side-module { flex: 1 1 260px; }
+        }
+
+        /* Table area */
+        .ob-table-area {
+            background: var(--surface); border-radius: 16px; border: 1px solid var(--border-gold);
+            box-shadow: 0 4px 20px rgba(5,12,26,0.3); overflow: hidden;
+        }
+        .ob-table-header {
+            display: flex; align-items: center; justify-content: center;
+            padding: 15px 20px 13px; border-bottom: 1px solid var(--border-gold);
+            position: relative;
+        }
+        .ob-clear-btn { position: absolute; right: 20px; }
+        .ob-table-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--gold); letter-spacing: 0.03em; }
+        .ob-clear-btn {
+            display: none; cursor: pointer; font-size: 9.5px; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase; color: var(--danger);
+            background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.2);
+            padding: 4px 10px; border-radius: 20px; transition: background 0.2s;
+        }
+        .ob-clear-btn:hover { background: rgba(224,92,92,0.2); }
+        .ob-table-scroll { overflow-y: auto; overflow-x: auto; max-height: 570px; -webkit-overflow-scrolling: touch; }
+        .ob-table-scroll::-webkit-scrollbar { width: 4px; }
+        .ob-table-scroll::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+        .ob-table-area table { width: 100%; border-collapse: collapse; min-width: 480px; }
+        @media (max-width: 640px) {
+            .ob-extra-col { display: none; }
+            .ob-table-area table { min-width: 260px; }
+        }
+        .ob-table-area thead th {
+            position: sticky; top: 0; background: var(--navy3);
+            padding: 9px 14px; text-align: left; font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold-dim);
+            border-bottom: 1px solid var(--border-gold); z-index: 2;
+        }
+        .ob-table-area tbody td {
+            padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 11.5px; color: var(--text-dim); vertical-align: middle;
+        }
+        .ob-table-area tbody tr:hover td { background: rgba(201,168,76,0.04); }
+        .ob-table-area tbody tr:last-child td { border-bottom: none; }
+        .ob-table-area td b { color: var(--text); font-weight: 600; }
+
+        /* Sidebar */
+        .ob-sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 120px; }
+        .ob-side-module {
+            background: var(--surface); border-radius: 14px; border: 1px solid var(--border-gold);
+            padding: 15px; box-shadow: 0 4px 20px rgba(5,12,26,0.3);
+        }
+        .ob-module-label {
+            font-family: 'Playfair Display', serif; font-size: 0.82rem; font-weight: 700;
+            color: var(--gold); margin-bottom: 12px; padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-gold);
+            display: flex; align-items: center; gap: 7px;
+        }
+        /* Usage rows */
+        .ob-usage-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
+        .ob-usage-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+        .ob-usage-val { font-size: 1rem; font-weight: 400; color: var(--text); }
+        .ob-trend-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+        .ob-trend-up   { background: rgba(77,184,138,0.15); color: var(--success); border: 1px solid rgba(77,184,138,0.25); }
+        .ob-trend-down { background: rgba(224,92,92,0.12); color: var(--danger); border: 1px solid rgba(224,92,92,0.2); }
+
+        /* Dip analysis */
+        #ob-dipAnalysis { display: none; margin-top: 11px; padding-top: 11px; border-top: 1px solid var(--border-gold); }
+        .ob-dip-sublabel { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--danger); margin-bottom: 10px; display: block; }
+        .ob-dip-item { margin-bottom: 9px; }
+        .ob-dip-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .ob-dip-name { font-size: 11px; font-weight: 600; color: var(--text-dim); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+        .ob-dip-name:hover { color: var(--gold); text-decoration: underline; }
+        .ob-dip-pct { font-size: 11px; font-weight: 700; color: var(--danger); }
+        .ob-dip-bar-track { height: 4px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; }
+        .ob-dip-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-light)); transition: width 0.6s ease; }
+
+        /* Leakage */
+        .ob-leak-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+        .ob-leak-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 10px; padding: 11px 8px; text-align: center;
+            cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+        }
+        .ob-leak-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+        .ob-lc-lost::before  { background: var(--danger); }
+        .ob-lc-dd::before    { background: var(--warning); }
+        .ob-lc-susp::before  { background: var(--text-muted); }
+        .ob-leak-card:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+        .ob-leak-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 5px; }
+        .ob-leak-num { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--text); line-height: 1; }
+
+        /* Table badges */
+        .ob-badge { padding: 3px 9px; border-radius: 20px; color: white; font-weight: 700; font-size: 9.5px; letter-spacing: 0.04em; }
+        .ob-bg-red    { background: var(--danger); }
+        .ob-bg-orange { background: var(--warning); }
+        .ob-bg-green  { background: var(--success); }
+        .ob-text-offtrack { color: var(--danger); font-weight: 700; }
+        .ob-text-ontrack  { color: var(--success); font-weight: 700; }
+
+        /* ─── SHARED FOOTER ─── */
+        .site-footer {
+            position: fixed; bottom: 0; left: 0; right: 0; text-align: center;
+            padding: 8px 0; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em;
+            background: rgba(13,31,60,0.85); backdrop-filter: blur(6px);
+            z-index: 99; border-top: 1px solid var(--border-gold);
+        }
+        @media (max-width: 480px) { .site-footer { font-size: 9.5px; padding: 6px 8px; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--navy2); }
+        ::-webkit-scrollbar-thumb { background: var(--navy4); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+        /* ─── LOADING SCREEN ─── */
+        #loading-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(145deg, #0a1628 0%, #0d1f3c 60%, #0f2447 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 28px;
+            transition: opacity 0.55s ease, visibility 0.55s ease;
+        }
+        #loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .ls-logo { height: 80px; width: auto; object-fit: contain; mix-blend-mode: lighten; animation: lsPulse 2s ease-in-out infinite; }
+        .ls-title {
+            font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700;
+            color: var(--gold); letter-spacing: 0.06em; text-align: center;
+        }
+        .ls-sub { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+        .ls-bar-track { width: 220px; height: 3px; background: rgba(201,168,76,0.15); border-radius: 10px; overflow: hidden; }
+        .ls-bar-fill { height: 100%; width: 0%; border-radius: 10px; background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-light)); animation: lsBar 2.2s ease-in-out infinite; }
+        .ls-dots { display: flex; gap: 8px; }
+        .ls-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); opacity: 0.25; animation: lsDot 1.4s ease-in-out infinite; }
+        .ls-dot:nth-child(2) { animation-delay: 0.2s; }
+        .ls-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes lsPulse { 0%,100%{opacity:0.85;transform:scale(1)} 50%{opacity:1;transform:scale(1.04)} }
+        @keyframes lsBar   { 0%{width:0%;opacity:1} 70%{width:100%;opacity:1} 100%{width:100%;opacity:0} }
+        @keyframes lsDot   { 0%,100%{opacity:0.25;transform:scale(1)} 50%{opacity:1;transform:scale(1.35)} }
+
+        /* ─── DATE VALIDATION TOAST ─── */
+        #date-toast {
+            position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-12px);
+            background: linear-gradient(135deg, rgba(192,57,43,0.92), rgba(160,40,30,0.92));
+            backdrop-filter: blur(10px); color: #fff;
+            font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em;
+            padding: 11px 24px 11px 18px; border-radius: 10px;
+            border: 1px solid rgba(224,92,92,0.45);
+            box-shadow: 0 8px 28px rgba(192,57,43,0.4);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 5000;
+        }
+        #date-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast-icon { font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <img class="ls-logo" id="ls-logo-img" src="" alt="GNB Property">
+        <div class="ls-title">Training &amp; Onboarding Dashboard</div>
+        <div class="ls-bar-track"><div class="ls-bar-fill"></div></div>
+        <div class="ls-sub">Loading Master Dashboard&hellip;</div>
+        <div class="ls-dots">
+            <div class="ls-dot"></div>
+            <div class="ls-dot"></div>
+            <div class="ls-dot"></div>
+        </div>
+    </div>
+
+    <!-- DATE VALIDATION TOAST -->
+    <div id="date-toast"><span class="toast-icon">📅</span> Please select both Start and End dates before generating.</div>
+
+    <!-- SHARED HEADER -->
+    <header class="header">
+        <div class="header-logo">
+            <img id="logo-img" src="" alt="Company Logo">
+            <div class="header-divider"></div>
+            <span class="header-title">Training &amp; Onboarding Dashboard</span>
+        </div>
+        <div style="display:flex; align-items:center;">
+            <div class="header-badge">
+                <span class="badge-dot"></span>
+                Live Dashboard
+            </div>
+            <a class="details-link" id="details-link-btn" href="https://docs.google.com/spreadsheets/d/1hz22N9RvHtkIgnMpE5mi_kmJHuTy1AKosAk90MBZdQo/edit?gid=891838561#gid=891838561" target="_blank">
+                <span class="details-arrow">→</span> Click for more details
+            </a>
+        </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('training', this)">
+            <span class="tab-icon">📊</span> Training Performance
+        </button>
+        <button class="tab-btn" onclick="switchTab('onboarding', this)">
+            <span class="tab-icon">🚀</span> Onboarding Status
+        </button>
+    </nav>
+
+    <!-- ════════════════════════════════════════
+         TAB 1: TRAINING PERFORMANCE
+    ════════════════════════════════════════ -->
+    <div id="tab-training" class="tab-panel active">
+        <div class="page-wrap">
+            <div class="tp-main-layout">
+
+                <!-- LEFT SIDEBAR -->
+                <div class="cal-sidebar">
+                    <div class="side-header">Today's Schedule <span class="live-dot"></span></div>
+                    <div class="side-date" id="cal-today-date"></div>
+                    <div id="cal-events-list"><div style="color:var(--text-muted); font-size:12px;">Loading...</div></div>
+                </div>
+
+                <!-- DASHBOARD AREA -->
+                <div class="dashboard-area">
+                    <div class="controls-card">
+                        <div class="input-box"><label>Start Date</label><input type="date" id="start" lang="en-GB"></div>
+                        <div class="input-box"><label>End Date</label><input type="date" id="end" lang="en-GB"></div>
+                        <div class="input-box">
+                            <label>Trainers</label>
+                            <div id="trainer-list-container" class="dropdown-check-list">
+                                <div class="anchor" id="dd-anchor">Connecting...</div>
+                                <ul id="trainer-items" class="items"></ul>
+                            </div>
+                        </div>
+                        <div></div>
+                        <div class="btn-group">
+                            <button class="btn-ref" onclick="fetchData()">↻ Refresh</button>
+                            <button class="btn-gen" onclick="processReport()">Generate →</button>
+                            <button class="btn-pdf" onclick="exportPDF()" id="btn-pdf">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                                </svg>
+                                Export PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Two-column portrait layout: scorecards left, trainer cards right -->
+                    <div class="tp-content-layout" id="tp-content-layout" style="display:none;">
+                        <!-- LEFT: Score Cards -->
+                        <div class="tp-scorecard-col" id="summary-bar">
+                            <div class="g-card" id="g-comp-box" data-num="✓">
+                                <span class="g-icon">✓</span>
+                                <span id="g-comp" class="g-val">0</span>
+                                <span class="g-label">Sessions Completed</span>
+                            </div>
+                            <div class="g-card" id="g-canc-box" data-num="✕">
+                                <span class="g-icon">✕</span>
+                                <span id="g-canc" class="g-val">0</span>
+                                <span class="g-label">Sessions Cancelled</span>
+                            </div>
+                            <div class="g-card" id="g-time-box" data-num="⏱">
+                                <span class="g-icon">⏱</span>
+                                <span id="g-time" class="g-val">0h 0m</span>
+                                <span class="g-label">Total Duration</span>
+                            </div>
+                        </div>
+                        <!-- RIGHT: Trainer Cards (2 per row) -->
+                        <div class="tp-trainer-col">
+                            <div id="trainer-grid" class="trainer-grid"></div>
+                        </div>
+                    </div>
+                </div><!-- end dashboard-area -->
+
+            </div><!-- end tp-main-layout -->
+
+            <!-- PDF Footer -->
+            <div class="pdf-footer" id="pdf-footer">
+                <div class="pdf-footer-left"><img id="pdf-logo" src="" alt="Logo"></div>
+                <div class="pdf-footer-right">
+                    <div class="pdf-footer-name">Chandra Kanthan G</div>
+                    <div class="pdf-footer-role">Team Coordinator — Training</div>
+                    <div class="pdf-footer-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="286b4049464c5a49684f464a585a47584d5a5c51064b4745">[email&#160;protected]</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TAB 2: ONBOARDING STATUS
+    ════════════════════════════════════════ -->
+    <div id="tab-onboarding" class="tab-panel">
+        <div class="ob-wrap">
+
+            <!-- Controls bar -->
+            <div class="ob-controls-bar">
+                <span class="ob-sublabel">Master Dashboard</span>
+                <div class="ob-vdiv"></div>
+                <select class="ob-select" id="ob-trainerFilter" onchange="ob_applyFilters()">
+                    <option value="All">All Trainers</option>
+                </select>
+                <select class="ob-select" id="ob-amFilter" onchange="ob_applyFilters()">
+                    <option value="All">All AMs</option>
+                </select>
+                <button class="ob-btn-refresh" onclick="ob_initDashboard()">↻ Refresh</button>
+                <span id="ob-lastUpdate">Syncing...</span>
+                <button class="btn-pdf" onclick="ob_exportPDF()" id="ob-btn-pdf" style="margin-left:auto;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    Export PDF
+                </button>
+            </div>
+
+            <!-- Score Cards -->
+            <div class="ob-score-grid">
+                <div class="ob-score-card ob-sc-total" data-icon="👥" onclick="ob_setTableFilter('Total')">
+                    <span class="ob-sc-icon">👥</span>
+                    <span id="ob-totalClients" class="ob-sc-val">--</span>
+                    <span class="ob-sc-label">Total Clients (New Onboarding Plan)</span>
+                </div>
+                <div class="ob-score-card ob-sc-tip" data-icon="⚙️" onclick="ob_setTableFilter('Training IP')">
+                    <span class="ob-sc-icon">⚙️</span>
+                    <span id="ob-trainingIP" class="ob-sc-val">--</span>
+                    <span class="ob-sc-label">Training In Progress</span>
+                </div>
+                <div class="ob-score-card ob-sc-await" data-icon="⏳" onclick="ob_setTableFilter('Stalled')">
+                    <span class="ob-sc-icon">⏳</span>
+                    <span id="ob-stalledCount" class="ob-sc-val">--</span>
+                    <span class="ob-sc-label">Awaiting Onboarding (Training Completed)</span>
+                </div>
+                <div class="ob-score-card ob-sc-onboard" data-icon="✓" onclick="ob_setTableFilter('Onboarded')">
+                    <span class="ob-sc-icon">✓</span>
+                    <span id="ob-totalOnboarded" class="ob-sc-val">--</span>
+                    <span class="ob-sc-label">Onboarded</span>
+                </div>
+            </div>
+
+            <!-- Main Layout -->
+            <div class="ob-main-layout">
+
+                <!-- Table -->
+                <div class="ob-table-area">
+                    <div class="ob-table-header">
+                        <span class="ob-table-title" id="ob-tableTitle">Awaiting Onboarding</span>
+                        <span class="ob-clear-btn" id="ob-clearFocus" onclick="ob_setTableFilter('Total')">✖ Clear Filter</span>
+                    </div>
+                    <div class="ob-table-scroll">
+                        <table>
+                            <thead id="ob-tableHead">
+                                <tr>
+                                    <th>Client Name</th><th>Trainer</th>
+                                    <th class="ob-extra-col">Last Week</th>
+                                    <th class="ob-extra-col">Current Week</th>
+                                    <th class="ob-extra-col">Trend</th>
+                                    <th class="ob-extra-col">Weeks in Onboarding</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ob-mainBody">
+                                <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="ob-sidebar">
+
+                    <!-- Usage Trend -->
+                    <div class="ob-side-module">
+                        <div class="ob-module-label">📈 Usage Trend <span style="font-size:0.65rem; color:var(--text-muted); font-family:'Inter',sans-serif; font-weight:500;">(Onboarding Pending)</span></div>
+                        <div class="ob-usage-row">
+                            <span class="ob-usage-label">Last Week</span>
+                            <span id="ob-totalLastWeek" class="ob-usage-val">--</span>
+                        </div>
+                        <div class="ob-usage-row">
+                            <span class="ob-usage-label">Current Week</span>
+                            <span id="ob-totalCurWeek" class="ob-usage-val">--</span>
+                        </div>
+                        <div class="ob-usage-row" style="margin-top:4px;">
+                            <span class="ob-usage-label">Trend</span>
+                            <span id="ob-globalStatus" class="ob-trend-pill ob-trend-down">--%</span>
+                        </div>
+                        <div id="ob-dipAnalysis">
+                            <span class="ob-dip-sublabel">Top Awaiting Onboarding Dips</span>
+                            <div id="ob-dipList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Leakage -->
+                    <div class="ob-side-module">
+                        <div class="ob-module-label">📉 Portfolio Leakage</div>
+                        <div class="ob-leak-grid">
+                            <div class="ob-leak-card ob-lc-lost" onclick="ob_setTableFilter('Lost')">
+                                <span class="ob-leak-label">Lost</span>
+                                <span id="ob-lostCount" class="ob-leak-num">--</span>
+                            </div>
+                            <div class="ob-leak-card ob-lc-dd" onclick="ob_setTableFilter('DD Cancelled')">
+                                <span class="ob-leak-label">DD Cancelled</span>
+                                <span id="ob-ddCount" class="ob-leak-num">--</span>
+                            </div>
+                            <div class="ob-leak-card ob-lc-susp" onclick="ob_setTableFilter('Suspended')">
+                                <span class="ob-leak-label">Suspended</span>
+                                <span id="ob-suspCount" class="ob-leak-num">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end ob-sidebar -->
+            </div><!-- end ob-main-layout -->
+
+        </div>
+    </div>
+
+    <!-- SHARED FOOTER -->
+    <div class="site-footer">© 2026 GNB Property Software. All rights reserved.</div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+
+    /* 
+       TAB SWITCHING
+     */
+    function switchTab(tabName, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        btn.classList.add('active');
+        // Switch the "Click for more details" link based on active tab
+        const link = document.getElementById('details-link-btn');
+        if (tabName === 'onboarding') {
+            link.href = 'https://docs.google.com/spreadsheets/d/1Zt_OLPoJSGR69eOq9ANA10p2Ok0PZqHZhcdhCp7_xGk/edit?gid=23347790#gid=23347790';
+        } else {
+            link.href = 'https://docs.google.com/spreadsheets/d/1hz22N9RvHtkIgnMpE5mi_kmJHuTy1AKosAk90MBZdQo/edit?gid=891838561#gid=891838561';
+        }
+    }
+
+    /* 
+       TAB 1 — TRAINING PERFORMANCE
+     */
+
+        const LOGO_B64 = 'data:image/png;base64,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';
+
+        document.getElementById('logo-img').src = LOGO_B64;
+        document.getElementById('pdf-logo').src = LOGO_B64;
+        document.getElementById('ls-logo-img').src = LOGO_B64;
+
+        // Open date picker on click anywhere inside the input box
+        document.getElementById('start').addEventListener('click', function(){ this.showPicker && this.showPicker(); });
+        document.getElementById('end').addEventListener('click',   function(){ this.showPicker && this.showPicker(); });
+
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbxlue8knQ6dtx9hQS5bBvGO8ZxeHLaOJdPdFXFYR7qC-L7ZDVtya1BVPzboV4AvI2Bk/exec";
+        let cachedRows = [];
+
+        function fmtDur(m) {
+            if (m < 60) return m + 'm';
+            const h = Math.floor(m / 60);
+            const mins = m % 60;
+            return mins === 0 ? h + 'h' : h + 'h ' + mins + 'm';
+        }
+
+        function getLogoPNG() {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.naturalWidth || 300; c.height = img.naturalHeight || 120;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    resolve(c.toDataURL('image/png'));
+                };
+                img.onerror = () => resolve(null);
+                img.src = LOGO_B64;
+            });
+        }
+
+        function exportPDF() {
+            if (!window.reportData || !window.reportData.keys || window.reportData.keys.length === 0) {
+                alert('Please generate the report first before exporting.');
+                return;
+            }
+            const btn = document.getElementById('btn-pdf');
+            btn.textContent = 'Generating…';
+            btn.disabled = true;
+            getLogoPNG().then(logoPNG => _buildPDF(logoPNG, btn));
+        }
+
+        function _buildPDF(logoPNG, btn) {
+            const startVal = document.getElementById('start').value;
+            const endVal   = document.getElementById('end').value;
+            const fmtDate  = v => { const d = new Date(v); return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); };
+            const dateRange = `${fmtDate(startVal)} – ${fmtDate(endVal)}`;
+            const filename  = `Training_Report_${startVal}_to_${endVal}.pdf`;
+            const NAVY=[13,31,60],GOLD=[201,168,76],WHITE=[255,255,255],LGRAY=[245,246,248],MGRAY=[220,224,230],DGRAY=[80,90,105],GREEN=[26,158,110],RED=[192,57,43],LGREEN=[232,248,241],LRED=[253,235,234];
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+            const SERIF='times',PW=210,PH=297,ML=12,MR=12;
+            const CW=(PW-ML-MR-6)/2;
+            let py=0;
+            const totalComp=window.reportData.totalC,totalCanc=window.reportData.totalX,totalMins=window.reportData.totalM,keys=window.reportData.keys,report=window.reportData.report;
+            const setFont=(family,style,size,color)=>{doc.setFont(family,style);doc.setFontSize(size);if(color)doc.setTextColor(...color);};
+            const sans=(style,size,color)=>setFont('helvetica',style,size,color);
+            const serif=(style,size,color)=>setFont(SERIF,style,size,color);
+            const setFill=c=>doc.setFillColor(...c);
+            const setDraw=c=>doc.setDrawColor(...c);
+            const rect=(x,y,w,h,s='F')=>doc.rect(x,y,w,h,s);
+            const line=(x1,y1,x2,y2)=>doc.line(x1,y1,x2,y2);
+            const text=(t,x,y,opts={})=>doc.text(String(t),x,y,opts);
+            const gradientRect=(x,y,w,h,colorA,colorB,steps=30)=>{for(let i=0;i<steps;i++){const t=i/(steps-1);const r=Math.round(colorA[0]+(colorB[0]-colorA[0])*t);const g=Math.round(colorA[1]+(colorB[1]-colorA[1])*t);const b=Math.round(colorA[2]+(colorB[2]-colorA[2])*t);doc.setFillColor(r,g,b);doc.rect(x,y+(h/steps)*i,w,h/steps+0.5,'F');}};
+            const drawPageHeader=(isFirstPage)=>{if(isFirstPage){setFill(NAVY);rect(0,0,PW,30);if(logoPNG)try{doc.addImage(logoPNG,'PNG',ML,5,26,13);}catch(e){}serif('bold',14,GOLD);text('TRAINING PERFORMANCE REPORT',PW/2,13,{align:'center'});sans('normal',8,[210,195,155]);text(dateRange,PW/2,21,{align:'center'});sans('normal',6.5,[160,148,115]);text('R E P O R T I N G  P E R I O D',PW/2,26.5,{align:'center'});setDraw(GOLD);doc.setLineWidth(0.5);line(0,30,PW,30);py=34;}else{setFill(NAVY);rect(0,0,PW,18);if(logoPNG)try{doc.addImage(logoPNG,'PNG',ML,3,22,11);}catch(e){}serif('bold',11,GOLD);text('TRAINING PERFORMANCE REPORT',PW/2,11,{align:'center'});setDraw(GOLD);doc.setLineWidth(0.5);line(0,18,PW,18);py=23;}};
+            const drawPageFooter=()=>{const fy=PH-10;setDraw(GOLD);doc.setLineWidth(0.3);line(ML,fy-3,PW-MR,fy-3);serif('bold',8,NAVY);text('Chandra Kanthan G',PW-MR,fy,{align:'right'});sans('normal',6.5,DGRAY);text('Team Coordinator — Training  |  Chandra@gnbproperty.com',PW-MR,fy+4,{align:'right'});sans('normal',6,[180,180,180]);text(`Page ${doc.internal.getCurrentPageInfo().pageNumber}`,ML,fy+2);};
+            const checkNewPage=(needed)=>{if(py+needed>PH-16){drawPageFooter();doc.addPage();drawPageHeader(false);}};
+            drawPageHeader(true);
+            const cardH=20,cardW=(PW-ML-MR-8)/3;
+            const cardDefs=[{label:'Sessions Completed',value:String(totalComp),fromColor:[26,158,110],toColor:WHITE,valColor:[10,80,50],lblColor:[30,100,70]},{label:'Sessions Cancelled',value:String(totalCanc),fromColor:[192,57,43],toColor:WHITE,valColor:[120,20,10],lblColor:[150,40,30]},{label:'Total Duration',value:`${Math.floor(totalMins/60)}h ${totalMins%60}m`,fromColor:NAVY,toColor:WHITE,valColor:NAVY,lblColor:[40,60,100]}];
+            cardDefs.forEach((c,i)=>{const cx=ML+i*(cardW+4);doc.saveGraphicsState();const rx=cx,ry=py,rw=cardW,rh=cardH,rad=3;const k=0.5523;const toU=v=>(v*doc.internal.scaleFactor);const x0=toU(rx),y0=toU(doc.internal.pageSize.height-ry);const x1=toU(rx+rw),y1=toU(doc.internal.pageSize.height-(ry+rh));const r2=toU(rad),kr=r2*k;doc.internal.write([(x0+r2).toFixed(2),(y0).toFixed(2),'m',(x1-r2).toFixed(2),(y0).toFixed(2),'l',(x1-r2+kr).toFixed(2),(y0).toFixed(2),(x1).toFixed(2),(y0-kr).toFixed(2),(x1).toFixed(2),(y0-r2).toFixed(2),'c',(x1).toFixed(2),(y1+r2).toFixed(2),'l',(x1).toFixed(2),(y1+r2-kr).toFixed(2),(x1-r2+kr).toFixed(2),(y1).toFixed(2),(x1-r2).toFixed(2),(y1).toFixed(2),'c',(x0+r2).toFixed(2),(y1).toFixed(2),'l',(x0+r2-kr).toFixed(2),(y1).toFixed(2),(x0).toFixed(2),(y1+kr).toFixed(2),(x0).toFixed(2),(y1+r2).toFixed(2),'c',(x0).toFixed(2),(y0-r2).toFixed(2),'l',(x0).toFixed(2),(y0-r2+kr).toFixed(2),(x0+r2-kr).toFixed(2),(y0).toFixed(2),(x0+r2).toFixed(2),(y0).toFixed(2),'c','W n'].join(' '));gradientRect(cx,py,cardW,cardH,c.fromColor,c.toColor,40);doc.restoreGraphicsState();setDraw([180,185,195]);doc.setLineWidth(0.5);doc.roundedRect(cx,py,cardW,cardH,3,3,'S');serif('bold',20,c.valColor);text(c.value,cx+cardW/2,py+12,{align:'center'});sans('bold',6,c.lblColor);text(c.label.toUpperCase(),cx+cardW/2,py+18,{align:'center'});});
+            py+=cardH+4;
+            serif('bold',10,NAVY);text('TRAINER PERFORMANCE BREAKDOWN',ML,py+3.5);setDraw(GOLD);doc.setLineWidth(0.4);line(ML,py+5,PW-MR,py+5);py+=8;
+            const renderTrainerCard=(name,data,cx,skipCheck=false,forceY=null)=>{const startY=py;let iy=startY;const innerW=CW;const compDates=Object.keys(data.comp).sort();const cancDates=Object.keys(data.canc).sort();const compRows=compDates.reduce((s,d)=>s+data.comp[d].length,0);const cancRows=Object.keys(data.canc).reduce((s,d)=>s+Object.keys(data.canc[d]).length,0);const compH=compDates.length*5.5+compRows*6.5;const cancH=cancDates.length*5.5+cancRows*6.5;const estH=21+Math.max(compH,cancH,14)+6;iy=py;setFill(WHITE);setDraw([210,215,220]);doc.setLineWidth(0.3);doc.roundedRect(cx,iy,innerW,estH,2,2,'FD');setFill(NAVY);doc.roundedRect(cx,iy,innerW,10,2,2,'F');rect(cx,iy+6,innerW,4,'F');serif('bold',9,WHITE);text(name,cx+innerW/2,iy+7,{align:'center'});setDraw(GOLD);doc.setLineWidth(0.3);line(cx+3,iy+10,cx+innerW-3,iy+10);iy+=13;const subW=(innerW-9)/2;const lx=cx+3;const rx=cx+innerW/2+1.5;setFill(LGREEN);rect(lx,iy,subW,6,'F');sans('bold',6.5,GREEN);text('✓  COMPLETED',lx+subW/2,iy+4.2,{align:'center'});setFill(LRED);rect(rx,iy,subW,6,'F');sans('bold',6.5,RED);text('✕  CANCELLED',rx+subW/2,iy+4.2,{align:'center'});iy+=8;let lyL=iy,lyR=iy;compDates.forEach(date=>{setFill([235,240,248]);rect(lx,lyL,subW,5.5,'F');sans('bold',6,NAVY);text(date,lx+2,lyL+4);lyL+=6;data.comp[date].forEach(entry=>{sans('normal',6,DGRAY);const nm=doc.splitTextToSize(entry.c,subW-18);text(nm[0],lx+3,lyL+3.5);const barW=subW-22;const barX=lx+3;setFill([220,228,238]);rect(barX,lyL+4.5,barW,1.8,'F');const pct=Math.min(entry.m/90,1);gradientRect(barX,lyL+4.5,barW*pct,1.8,[180,235,210],[26,158,110],12);sans('bold',6,NAVY);text(fmtDur(entry.m),lx+subW-2,lyL+4,{align:'right'});lyL+=6.5;});});cancDates.forEach(date=>{setFill([248,235,234]);rect(rx,lyR,subW,5.5,'F');sans('bold',6,[150,30,20]);text(date,rx+2,lyR+4);lyR+=6;Object.keys(data.canc[date]).forEach(client=>{const count=data.canc[date][client];sans('normal',6,DGRAY);const nm=doc.splitTextToSize(client,subW-12);text(nm[0],rx+3,lyR+3.5);if(count>1){sans('bold',6,RED);text(`×${count}`,rx+subW-2,lyR+3.5,{align:'right'});}lyR+=6.5;});});if(compDates.length===0){sans('normal',6.5,[180,185,195]);text('No completed sessions',lx+subW/2,iy+6,{align:'center'});}if(cancDates.length===0){sans('normal',6.5,[180,185,195]);text('No cancellations',rx+subW/2,iy+6,{align:'center'});}return Math.max(lyL,lyR)-startY+4;};
+            for(let i=0;i<keys.length;i+=2){const nameL=keys[i].toLowerCase().replace(/\b\w/g,s=>s.toUpperCase());const nameR=keys[i+1]?keys[i+1].toLowerCase().replace(/\b\w/g,s=>s.toUpperCase()):null;const dataL=report[keys[i]];const dataR=nameR?report[keys[i+1]]:null;const compD=Object.keys(dataL.comp).sort();const cancD=Object.keys(dataL.canc).sort();const cmpR=compD.reduce((s,d)=>s+dataL.comp[d].length,0);const cnR=Object.keys(dataL.canc).reduce((s,d)=>s+Object.keys(dataL.canc[d]).length,0);const cmpH=compD.length*5.5+cmpR*6.5;const cnH=cancD.length*5.5+cnR*6.5;const rowEstH=21+Math.max(cmpH,cnH,14)+6;if(i>0&&py+rowEstH>PH-16){drawPageFooter();doc.addPage();drawPageHeader(false);}const rowStartY=py;py=rowStartY;const hL=renderTrainerCard(nameL,dataL,ML);if(dataR){py=rowStartY;renderTrainerCard(nameR,dataR,ML+CW+6,true);}py=rowStartY+hL+6;}
+            drawPageFooter();
+            doc.save(filename);
+            btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> Export PDF`;
+            btn.disabled=false;
+        }
+
+        const dd = document.getElementById('trainer-list-container');
+        document.getElementById('dd-anchor').onclick = (e) => { e.stopPropagation(); dd.classList.toggle('visible'); };
+        document.onclick = (e) => { if(!dd.contains(e.target)) dd.classList.remove('visible'); };
+
+        async function fetchData() {
+            document.getElementById('dd-anchor').innerText = "Loading...";
+            const cb = 'cb' + Date.now();
+            window[cb] = (data) => {
+                if (!data) { ls_ready(); return; }
+                cachedRows = data.split('\n').filter(r => r.trim()).map(r => r.split(','));
+                populateTrainers();
+                ls_ready();
+            };
+            const s = document.createElement('script');
+            s.src = `${webAppUrl}?callback=${cb}`;
+            s.onerror = () => ls_ready();
+            document.head.appendChild(s);
+        }
+
+        function updateAnchorText() {
+            const checked = Array.from(document.querySelectorAll('.t-check:checked'));
+            const anchor = document.getElementById('dd-anchor');
+            anchor.innerText = checked.length === 0 ? "Select Trainers" : (checked.length === 1 ? checked[0].value : checked.length + " Trainers");
+        }
+
+        function populateTrainers() {
+            if (!cachedRows.length) return;
+            const headers = cachedRows[0].map(h => h.toLowerCase().trim());
+            const tIdx = headers.findIndex(h => h.includes('trainer'));
+            const trainers = [...new Set(cachedRows.slice(1).map(r => r[tIdx]?.trim()))].filter(Boolean).sort();
+            const list = document.getElementById('trainer-items');
+            list.innerHTML = `<li><label><input type="checkbox" checked onchange="document.querySelectorAll('.t-check').forEach(c=>{c.checked=this.checked}); updateAnchorText()"> Select All</label></li>`;
+            trainers.forEach(t => {
+                const normalCased = t.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+                list.innerHTML += `<li><label><input type="checkbox" class="t-check" value="${t}" checked onchange="updateAnchorText()"> ${normalCased}</label></li>`;
+            });
+            updateAnchorText();
+        }
+
+        function showDateToast() {
+            const t = document.getElementById('date-toast');
+            t.classList.add('show');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        function processReport() {
+            const startStr = document.getElementById('start').value;
+            const endStr = document.getElementById('end').value;
+            if(!startStr || !endStr) { showDateToast(); return; }
+            if(!cachedRows.length) return;
+            const [sY,sM,sD] = startStr.split('-').map(Number);
+            const [eY,eM,eD] = endStr.split('-').map(Number);
+            const start = new Date(sY, sM-1, sD);
+            const end   = new Date(eY, eM-1, eD);
+            const headers = cachedRows[0].map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
+            const dIdx = headers.findIndex(h => h.includes('date'));
+            const tIdx = headers.findIndex(h => h.includes('trainer'));
+            const sIdx = headers.findIndex(h => h.includes('status'));
+            const mIdx = headers.findIndex(h => h.includes('duration'));
+            const cIdx = headers.findIndex(h => h.includes('client') || h.includes('location'));
+            const selected = Array.from(document.querySelectorAll('.t-check:checked')).map(c => c.value);
+            const report = {};
+            let totalC = 0, totalX = 0, totalM = 0;
+            cachedRows.slice(1).forEach(row => {
+                const name = row[tIdx]?.trim();
+                if(!selected.includes(name)) return;
+                const dParts = row[dIdx].split('/');
+                const rDate = (dParts.length === 3) ? new Date(dParts[2], dParts[1]-1, dParts[0]) : new Date(row[dIdx]);
+                if(rDate >= start && rDate <= end) {
+                    if(!report[name]) report[name] = { comp: {}, canc: {}, mins: 0 };
+                    const status = row[sIdx]?.toLowerCase() || "";
+                    const client = (row[cIdx] || "N/A").trim();
+                    const day = rDate.toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+                    if(status.includes('comp')) {
+                        const m = parseInt(row[mIdx]) || 0;
+                        if(!report[name].comp[day]) report[name].comp[day] = [];
+                        report[name].comp[day].push({c: client, m: m});
+                        report[name].mins += m; totalM += m; totalC++;
+                    } else if(status.includes('canc')) {
+                        if(!report[name].canc[day]) report[name].canc[day] = {};
+                        report[name].canc[day][client] = (report[name].canc[day][client] || 0) + 1;
+                        totalX++;
+                    }
+                }
+            });
+            window.reportData = { keys: Object.keys(report).sort(), report, totalC, totalX, totalM, startStr, endStr };
+            document.getElementById('tp-content-layout').style.display = 'grid';
+            document.getElementById('summary-bar').style.display = ''; // visible as flex column
+            document.getElementById('g-comp').innerText = totalC;
+            document.getElementById('g-canc').innerText = totalX;
+            document.getElementById('g-time').innerText = Math.floor(totalM/60) + "h " + (totalM%60) + "m";
+            const grid = document.getElementById('trainer-grid');
+            grid.innerHTML = "";
+            const keys = Object.keys(report).sort();
+            if(!keys.length) { grid.innerHTML = `<div class="empty-state">No training data found for the selected period.</div>`; return; }
+            keys.forEach(n => {
+                const d = report[n];
+                const renderTimeline = (obj, isComp) => {
+                    return Object.keys(obj).sort((a,b) => new Date(a) - new Date(b)).map(date => `
+                        <div class="timeline-container">
+                            <div class="date-column"><span>${date}</span></div>
+                            <div class="line-column"><div class="v-line"><div class="dot ${isComp ? 'dot-comp' : 'dot-canc'}"></div></div></div>
+                            <div class="client-list">
+                                ${isComp
+                                    ? obj[date].map(i => {
+                                        const p = Math.min((i.m/90)*100,100);
+                                        return `<div class="t-entry"><span class="c-name" title="${i.c}">${i.c}</span><div class="prog-track"><div class="prog-fill" style="width:${p}%"></div></div><span class="m-val">${fmtDur(i.m)}</span></div>`;
+                                    }).join('')
+                                    : Object.keys(obj[date]).map(c => `<div class="t-entry"><span class="c-name" title="${c}">${c}</span>${obj[date][c]>1?`<span class="t-count">×${obj[date][c]}</span>`:''}</div>`).join('')
+                                }
+                            </div>
+                        </div>`).join('');
+                };
+                grid.innerHTML += `
+                    <div class="trainer-card">
+                        <div class="trainer-name">${n.toLowerCase().replace(/\b\w/g, s => s.toUpperCase())}</div>
+                        <div class="report-split">
+                            <div><div class="col-title col-comp"><span class="col-dot dot-green"></span>Completed</div>${renderTimeline(d.comp, true)}</div>
+                            <div><div class="col-title col-canc"><span class="col-dot dot-red"></span>Cancelled</div>${renderTimeline(d.canc, false)}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function fmtDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+        }
+
+        const calendarEvents = [
+            { start:'09:00', end:'10:00', title:'Training for Jollye & Wood' },
+            { start:'10:30', end:'11:30', title:'Training for Lightning Estates' },
+            { start:'12:00', end:'13:00', title:'Training for CHAMPS UK Property' },
+            { start:'14:00', end:'15:00', title:'Training for MFL Estates' },
+            { start:'15:30', end:'16:30', title:'Training for Rocket Estate Agents' },
+            { start:'17:00', end:'18:00', title:'Training for Everstar Properties' },
+        ];
+
+        function renderCalendar() {
+            const now = new Date();
+            document.getElementById('cal-today-date').textContent =
+                now.toLocaleDateString('en-GB', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+            const nowMins = now.getHours() * 60 + now.getMinutes();
+            const fmt12 = (h, m) => { const ap = h >= 12 ? 'PM' : 'AM'; return `${h%12||12}:${String(m).padStart(2,'0')} ${ap}`; };
+            document.getElementById('cal-events-list').innerHTML = calendarEvents.map(ev => {
+                const [sh,sm] = ev.start.split(':').map(Number);
+                const [eh,em] = ev.end.split(':').map(Number);
+                const sMins = sh*60+sm, eMins = eh*60+em;
+                const cls = nowMins >= sMins && nowMins < eMins ? 'ev-ongoing' : nowMins < sMins ? 'ev-upcoming' : 'ev-past';
+                const badge = cls === 'ev-ongoing' ? 'Live' : cls === 'ev-upcoming' ? 'Soon' : '';
+                return `<div class="cal-event ${cls}">
+                    <div class="cal-event-body">
+                        <span class="ev-time">${fmt12(sh,sm)} – ${fmt12(eh,em)}</span>
+                        <span class="ev-title">${ev.title}</span>
+                    </div>
+                    <span class="ev-badge">${badge}</span>
+                </div>`;
+            }).join('');
+        }
+
+    /* 
+       TAB 2 — ONBOARDING STATUS
+     */
+        const OB_API_URL = "https://script.google.com/macros/s/AKfycbw1RktvUUquAcP8ogmyzSVTctiyQawNvVaaopQjevxDI8Og3YGRiigY3tG8fwQ7vkRgNw/exec";
+        let ob_allData = [];
+        let ob_currentTableType = 'Stalled';
+        let ob_specificClientSearch = "";
+
+        async function ob_initDashboard() {
+            try {
+                const response = await fetch(OB_API_URL);
+                const data = await response.json();
+                const ob_oldOnes = data.oldClients.slice(1).map(r => { r.isNew = false; return r; });
+                const ob_newOnes = data.newClients.slice(1).map(r => { r.isNew = true; return r; });
+                ob_allData = [...ob_oldOnes, ...ob_newOnes];
+                ob_populateTrainers();
+                ob_applyFilters();
+                document.getElementById('ob-lastUpdate').innerText = "Last Sync: " + new Date().toLocaleTimeString();
+            } catch (e) { console.error(e); } finally { ls_ready(); }
+        }
+
+        function ob_populateTrainers() {
+            const select = document.getElementById('ob-trainerFilter');
+            const trainers = [...new Set(ob_allData.map(row => String(row[1]).trim()))].filter(t => t && t !== "undefined" && t !== "Trainer");
+            select.innerHTML = '<option value="All">All Trainers</option>';
+            trainers.sort().forEach(t => { select.innerHTML += `<option value="${t}">${t}</option>`; });
+
+            const amSelect = document.getElementById('ob-amFilter');
+            const ams = [...new Set(ob_allData.map(row => String(row[2] || "").trim()))].filter(a => a && a !== "undefined" && a !== "AM" && a !== "Onboarding AM");
+            amSelect.innerHTML = '<option value="All">All AMs</option>';
+            ams.sort().forEach(a => { amSelect.innerHTML += `<option value="${a}">${a}</option>`; });
+        }
+
+        function ob_applyFilters() {
+            const trainer = document.getElementById('ob-trainerFilter').value;
+            const am      = document.getElementById('ob-amFilter').value;
+            let filteredData = ob_allData;
+            if (trainer !== "All") filteredData = filteredData.filter(row => String(row[1]).trim() === trainer);
+            if (am      !== "All") filteredData = filteredData.filter(row => String(row[2] || "").trim() === am);
+            ob_updateMetrics(filteredData);
+            ob_renderTable(filteredData);
+        }
+
+        function ob_updateMetrics(data) {
+            let totalLast = 0, totalCur = 0;
+            let stalledDips = [];
+            let s = { total: data.length, onboarded: 0, trainingIP: 0, stalled: 0, lost: 0, dd: 0, susp: 0 };
+            data.forEach(row => {
+                const onb = String(row[4] || "").trim();
+                const train = String(row[3] || "").trim();
+                const lastMins = ob_timeToMinutes(row[6]);
+                const curMins = ob_timeToMinutes(row[7]);
+                if (onb === "Lost") s.lost++;
+                else if (onb === "DD Cancelled") s.dd++;
+                else if (onb === "Suspended") s.susp++;
+                else {
+                    if (onb === "Completed") s.onboarded++;
+                    if (train === "In Progress" && onb === "In Progress") s.trainingIP++;
+                    if (train === "Completed" && onb === "In Progress") {
+                        s.stalled++;
+                        // Only sum usage for Onboarding Pending clients
+                        totalLast += lastMins; totalCur += curMins;
+                        if (curMins < lastMins && lastMins > 0) {
+                            const dropPc = Math.round(((lastMins - curMins) / lastMins) * 100);
+                            stalledDips.push({ name: row[0], pc: dropPc });
+                        }
+                    }
+                }
+            });
+            document.getElementById('ob-totalLastWeek').innerText = ob_formatMins(totalLast);
+            document.getElementById('ob-totalCurWeek').innerText = ob_formatMins(totalCur);
+            const globalPc = totalLast === 0 ? 0 : Math.round(((totalCur - totalLast) / totalLast) * 100);
+            const statusEl = document.getElementById('ob-globalStatus');
+            statusEl.innerText = (globalPc >= 0 ? `▲ +${globalPc}%` : `▼ ${globalPc}%`);
+            statusEl.className = "ob-trend-pill " + (globalPc >= 0 ? "ob-trend-up" : "ob-trend-down");
+            const dipBox = document.getElementById('ob-dipAnalysis');
+            const dipList = document.getElementById('ob-dipList');
+            if (stalledDips.length > 0) {
+                dipBox.style.display = 'block';
+                stalledDips.sort((a, b) => b.pc - a.pc);
+                dipList.innerHTML = stalledDips.slice(0, 4).map(d => `
+                    <div class="ob-dip-item">
+                        <div class="ob-dip-row">
+                            <span class="ob-dip-name" onclick="ob_focusClient('${d.name}')">${d.name}</span>
+                            <span class="ob-dip-pct">-${d.pc}%</span>
+                        </div>
+                        <div class="ob-dip-bar-track">
+                            <div class="ob-dip-bar-fill" style="width:${Math.min(d.pc,100)}%"></div>
+                        </div>
+                    </div>`).join('');
+            } else { dipBox.style.display = 'none'; }
+            document.getElementById('ob-totalClients').innerText = s.total;
+            document.getElementById('ob-trainingIP').innerText = s.trainingIP;
+            document.getElementById('ob-stalledCount').innerText = s.stalled;
+            document.getElementById('ob-totalOnboarded').innerText = s.onboarded;
+            document.getElementById('ob-lostCount').innerText = s.lost;
+            document.getElementById('ob-ddCount').innerText = s.dd;
+            document.getElementById('ob-suspCount').innerText = s.susp;
+        }
+
+        function ob_focusClient(name) {
+            ob_specificClientSearch = name;
+            ob_currentTableType = "Total";
+            document.getElementById('ob-clearFocus').style.display = 'inline';
+            ob_applyFilters();
+        }
+
+        function ob_setTableFilter(type) {
+            ob_specificClientSearch = "";
+            ob_currentTableType = type;
+            document.getElementById('ob-clearFocus').style.display = (type === 'Total' ? 'none' : 'inline');
+            ob_applyFilters();
+        }
+
+        function ob_getStatusColor(text) {
+            if (!text) return "—";
+            const lower = text.toLowerCase();
+            if (lower.includes("off track")) return `<span class="ob-text-offtrack">${text}</span>`;
+            if (lower.includes("on track")) return `<span class="ob-text-ontrack">${text}</span>`;
+            return text;
+        }
+
+        function ob_renderTable(data) {
+            const titleMap = { 'Stalled': 'Awaiting Onboarding', 'Training IP': 'Training In Progress' };
+            const displayTitle = ob_specificClientSearch ? `Viewing: ${ob_specificClientSearch}` : (titleMap[ob_currentTableType] || ob_currentTableType);
+            document.getElementById('ob-tableTitle').innerText = displayTitle;
+            const tbody = document.getElementById('ob-mainBody');
+            const thead = document.getElementById('ob-tableHead');
+
+            // Set table min-width so horizontal scroll works properly
+            const tableEl = document.querySelector('.ob-table-area table');
+            if (ob_currentTableType === 'Training IP') {
+                tableEl.style.minWidth = '750px';
+            } else if (ob_currentTableType === 'Stalled' || ob_currentTableType === 'Total') {
+                tableEl.style.minWidth = '520px';
+            } else {
+                tableEl.style.minWidth = '320px';
+            }
+
+            // Render correct headers based on view type
+            if (ob_currentTableType === 'Training IP') {
+                thead.innerHTML = `<tr><th>Client Name</th><th>Trainer</th><th>Onboarding AM</th><th>Joined Date</th><th>Training Status</th><th>% Complete</th><th>Days Off Track</th><th>Modules</th><th>Weeks</th></tr>`;
+            } else if (ob_currentTableType === 'Lost') {
+                thead.innerHTML = `<tr><th>Client Name</th><th>Trainer</th><th>Lost Stage</th><th colspan="3" style="color:var(--text-muted)"></th></tr>`;
+            } else if (ob_currentTableType === 'Stalled') {
+                thead.innerHTML = `<tr>
+                    <th>Client Name</th><th>Trainer</th>
+                    <th class="ob-extra-col">Last Week</th>
+                    <th class="ob-extra-col">Current Week</th>
+                    <th class="ob-extra-col">Trend</th>
+                    <th class="ob-extra-col">Weeks</th>
+                    <th>Comments</th>
+                </tr>`;
+            } else if (ob_currentTableType === 'Total') {
+                thead.innerHTML = `<tr>
+                    <th>Client Name</th><th>Trainer</th>
+                    <th class="ob-extra-col">Last Week</th>
+                    <th class="ob-extra-col">Current Week</th>
+                    <th class="ob-extra-col">Trend</th>
+                    <th class="ob-extra-col">Weeks</th>
+                    <th>Status</th>
+                </tr>`;
+            } else {
+                thead.innerHTML = `<tr>
+                    <th>Client Name</th><th>Trainer</th>
+                    <th class="ob-extra-col" style="display:none">Last Week</th>
+                    <th class="ob-extra-col" style="display:none">Current Week</th>
+                    <th class="ob-extra-col" style="display:none">Trend</th>
+                    <th class="ob-extra-col" style="display:none">Weeks in Onboarding</th>
+                </tr>`;
+            }
+
+            tbody.innerHTML = "";
+            const filtered = data.filter(row => {
+                if (ob_specificClientSearch) return row[0] === ob_specificClientSearch;
+                const train = String(row[3] || "").trim(), onb = String(row[4] || "").trim();
+                if (ob_currentTableType === 'Total') return true; // ALL clients
+                if (ob_currentTableType === 'Training IP') return train === "In Progress" && onb === "In Progress";
+                if (ob_currentTableType === 'Stalled') return train === "Completed" && onb === "In Progress";
+                if (ob_currentTableType === 'Onboarded') return onb === "Completed";
+                if (ob_currentTableType === 'Lost') return onb === "Lost";
+                if (ob_currentTableType === 'DD Cancelled') return onb === "DD Cancelled";
+                if (ob_currentTableType === 'Suspended') return onb === "Suspended";
+                return false;
+            });
+
+            filtered.forEach(row => {
+                if (ob_currentTableType === 'Training IP') {
+                    let pct = row.isNew ? (row[19] ? Math.round(row[19] * 100) + "%" : "0%") : "-";
+                    const joinedDate = row[8] ? new Date(row[8]).toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) : "—";
+                    const weeksIP = ob_calcWeeks(row[8]);
+                    const wkColorIP = weeksIP >= 4 ? "ob-bg-red" : (weeksIP >= 2 ? "ob-bg-orange" : "ob-bg-green");
+                    tbody.innerHTML += `<tr>
+                        <td><b>${row[0]}</b></td>
+                        <td>${row[1]}</td>
+                        <td>${row[2] || "—"}</td>
+                        <td>${joinedDate}</td>
+                        <td>${ob_getStatusColor(row[22])}</td>
+                        <td>${pct}</td>
+                        <td>${row[21] || "0"}</td>
+                        <td>${row[20] || "0"}</td>
+                        <td><span class="ob-badge ${wkColorIP}">${weeksIP} Weeks</span></td>
+                    </tr>`;
+                } else if (ob_currentTableType === 'Lost') {
+                    const trainStatus = String(row[3] || "").trim();
+                    const isTrainingDone = trainStatus === "Completed";
+                    const lostStage = isTrainingDone
+                        ? `<span style="background:rgba(224,92,92,0.18);color:var(--danger);font-weight:700;font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid rgba(224,92,92,0.3);">Lost After Training</span>`
+                        : `<span style="background:rgba(230,126,52,0.18);color:#e67e34;font-weight:700;font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid rgba(230,126,52,0.3);">Lost Before Training</span>`;
+                    tbody.innerHTML += `<tr>
+                        <td><b>${row[0]}</b></td>
+                        <td>${row[1]}</td>
+                        <td>${lostStage}</td>
+                        <td colspan="3" style="color:var(--text-muted);font-size:11px;">${row[5] ? `<em>${row[5]}</em>` : ''}</td>
+                    </tr>`;
+                } else if (ob_currentTableType === 'Stalled') {
+                    const lastRaw = (row[6] || "").trim(), curUsage = row[7] || "00h 00m";
+                    const weeks = ob_calcWeeks(row[8]), lastMins = ob_timeToMinutes(lastRaw), curMins = ob_timeToMinutes(curUsage);
+                    let trendHTML = '─';
+                    if (lastMins > 0 || curMins > 0) {
+                        const pc = lastMins === 0 ? 100 : Math.round(((curMins - lastMins) / lastMins) * 100);
+                        trendHTML = pc >= 0 ? `<span style="color:var(--success);font-weight:700">▲ +${pc}%</span>` : `<span style="color:var(--danger);font-weight:700">▼ ${pc}%</span>`;
+                    }
+                    let color = weeks >= 4 ? "ob-bg-red" : (weeks >= 2 ? "ob-bg-orange" : "ob-bg-green");
+                    const comment = row[5] ? `<span style="color:var(--text-muted);font-size:10.5px;font-style:italic;">${row[5]}</span>` : `<span style="color:var(--border);font-size:10px;">—</span>`;
+                    tbody.innerHTML += `<tr>
+                        <td><b>${row[0]}</b></td>
+                        <td>${row[1]}</td>
+                        <td class="ob-extra-col">${lastRaw || "00h 00m"}</td>
+                        <td class="ob-extra-col">${curUsage}</td>
+                        <td class="ob-extra-col">${trendHTML}</td>
+                        <td class="ob-extra-col"><span class="ob-badge ${color}">${weeks} Wks</span></td>
+                        <td>${comment}</td>
+                    </tr>`;
+                } else if (ob_currentTableType === 'Total') {
+                    // ALL clients — usage shown only for Awaiting Onboarding, dash for others
+                    const train = String(row[3] || "").trim(), onb = String(row[4] || "").trim();
+                    const lastRaw = (row[6] || "").trim(), curUsage = row[7] || "00h 00m";
+                    const weeks = ob_calcWeeks(row[8]);
+                    const lastMins = ob_timeToMinutes(lastRaw), curMins = ob_timeToMinutes(curUsage);
+
+                    // Determine status label + badge style
+                    let statusLabel = '', statusStyle = '';
+                    if (onb === "Completed") {
+                        statusLabel = 'Onboarded';
+                        statusStyle = 'background:rgba(77,184,138,0.18);color:var(--success);border:1px solid rgba(77,184,138,0.35);';
+                    } else if (onb === "DD Cancelled") {
+                        statusLabel = 'DD Cancelled';
+                        statusStyle = 'background:rgba(230,126,52,0.18);color:#e67e34;border:1px solid rgba(230,126,52,0.35);';
+                    } else if (onb === "Suspended") {
+                        statusLabel = 'Suspended';
+                        statusStyle = 'background:rgba(107,125,158,0.2);color:var(--text-muted);border:1px solid rgba(107,125,158,0.3);';
+                    } else if (onb === "Lost") {
+                        statusLabel = 'Lost';
+                        statusStyle = 'background:rgba(224,92,92,0.18);color:var(--danger);border:1px solid rgba(224,92,92,0.3);';
+                    } else if (train === "Completed" && onb === "In Progress") {
+                        statusLabel = 'Awaiting Onboarding';
+                        statusStyle = 'background:rgba(224,92,92,0.18);color:var(--danger);border:1px solid rgba(224,92,92,0.3);';
+                    } else if (train === "In Progress" && onb === "In Progress") {
+                        statusLabel = 'Training In Progress';
+                        statusStyle = 'background:rgba(201,168,76,0.18);color:var(--gold);border:1px solid rgba(201,168,76,0.3);';
+                    } else {
+                        statusLabel = onb || train || '—';
+                        statusStyle = 'background:rgba(255,255,255,0.06);color:var(--text-muted);border:1px solid rgba(255,255,255,0.1);';
+                    }
+                    const statusBadge = `<span style="font-weight:700;font-size:10px;padding:3px 9px;border-radius:20px;white-space:nowrap;${statusStyle}">${statusLabel}</span>`;
+
+                    // Usage & trend: only show real values for Awaiting Onboarding; dash for all others
+                    const isAwaiting = train === "Completed" && onb === "In Progress";
+                    let lastDisp = '─', curDisp = '─', trendHTML = '─', weeksDisp = '─';
+                    if (isAwaiting) {
+                        lastDisp = lastRaw || "00h 00m";
+                        curDisp  = curUsage;
+                        if (lastMins > 0 || curMins > 0) {
+                            const pc = lastMins === 0 ? 100 : Math.round(((curMins - lastMins) / lastMins) * 100);
+                            trendHTML = pc >= 0 ? `<span style="color:var(--success);font-weight:700">▲ +${pc}%</span>` : `<span style="color:var(--danger);font-weight:700">▼ ${pc}%</span>`;
+                        }
+                        const wkColor = weeks >= 4 ? "ob-bg-red" : (weeks >= 2 ? "ob-bg-orange" : "ob-bg-green");
+                        weeksDisp = `<span class="ob-badge ${wkColor}">${weeks} Wks</span>`;
+                    }
+
+                    tbody.innerHTML += `<tr>
+                        <td><b>${row[0]}</b></td>
+                        <td>${row[1]}</td>
+                        <td class="ob-extra-col" style="color:var(--text-muted)">${lastDisp}</td>
+                        <td class="ob-extra-col" style="color:var(--text-muted)">${curDisp}</td>
+                        <td class="ob-extra-col">${trendHTML}</td>
+                        <td class="ob-extra-col">${weeksDisp}</td>
+                        <td>${statusBadge}</td>
+                    </tr>`;
+                } else {
+                    tbody.innerHTML += `<tr><td><b>${row[0]}</b></td><td>${row[1]}</td><td colspan="4" style="color:var(--text-muted);font-style:italic;">Status: ${row[4]}</td></tr>`;
+                }
+            });
+        }
+
+        function ob_timeToMinutes(val) {
+            if (!val || val === "0h" || val === "0" || val === "00h 00m" || val === "-") return 0;
+            const h = parseInt(val.match(/(\d+)h/)?.[1] || 0), m = parseInt(val.match(/(\d+)m/)?.[1] || 0);
+            return (h * 60) + m;
+        }
+        function ob_formatMins(mins) { return `${Math.floor(mins / 60)}h ${mins % 60}m`; }
+        function ob_calcWeeks(d) {
+            if(!d) return 0;
+            let diff = new Date() - new Date(d);
+            return diff < 0 ? 0 : Math.floor(diff / 604800000);
+        }
+
+        function ob_exportPDF() {
+            const btn = document.getElementById('ob-btn-pdf');
+            btn.textContent = 'Generating…';
+            btn.disabled = true;
+            const img = new Image();
+            img.onload = () => {
+                const c = document.createElement('canvas');
+                c.width = img.naturalWidth || 300; c.height = img.naturalHeight || 120;
+                c.getContext('2d').drawImage(img, 0, 0);
+                _buildOBPDF(c.toDataURL('image/png'), btn);
+            };
+            img.onerror = () => { _buildOBPDF(null, btn); };
+            img.src = LOGO_B64;
+        }
+
+        function _buildOBPDF(logoPNG, btn) {
+            const { jsPDF } = window.jspdf;
+            const now = new Date();
+            const genDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) + ', ' + now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) + ' ' + (now.getHours() >= 12 ? 'PM' : 'AM');
+            const filename = `Onboarding_Status_Report_${now.toISOString().slice(0,10)}.pdf`;
+
+            // Colour palette
+            const NAVY=[13,31,60], GOLD=[201,168,76], WHITE=[255,255,255], DGRAY=[80,90,105];
+            const GREEN=[26,158,110], RED=[192,57,43], ORANGE=[230,126,34];
+            const NAVY_LIGHT=[20,52,100], GOLD_DIM=[139,109,47];
+            const PW=210, PH=297, ML=14, MR=14;
+
+            const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+            const setFont=(fam,sty,sz,col)=>{ doc.setFont(fam,sty); doc.setFontSize(sz); if(col) doc.setTextColor(...col); };
+            const sans=(s,sz,c)=>setFont('helvetica',s,sz,c);
+            const serif=(s,sz,c)=>setFont('times',s,sz,c);
+            const rect=(x,y,w,h,s='F')=>doc.rect(x,y,w,h,s);
+            const line=(x1,y1,x2,y2)=>doc.line(x1,y1,x2,y2);
+            const txt=(t,x,y,o={})=>doc.text(String(t),x,y,o);
+            const setFill=c=>doc.setFillColor(...c);
+            const setDraw=c=>doc.setDrawColor(...c);
+
+            // Get filtered data
+            const trainerVal = document.getElementById('ob-trainerFilter').value;
+            const filteredData = trainerVal === 'All' ? ob_allData : ob_allData.filter(r => String(r[1]||'').trim() === trainerVal);
+
+            // Separate awaiting and training IP rows
+            const awaiting = filteredData.filter(r => String(r[3]||'').trim() === 'Completed' && String(r[4]||'').trim() === 'In Progress');
+            const trainingIP = filteredData.filter(r => String(r[3]||'').trim() === 'In Progress' && String(r[4]||'').trim() === 'In Progress');
+
+            const drawPageHeader = (title, pageNum, totalPages) => {
+                // Dark navy header band
+                setFill(NAVY); rect(0,0,PW,28);
+                // Logo
+                if(logoPNG) try { doc.addImage(logoPNG,'PNG',ML,4,22,18); } catch(e){}
+                // Title centred
+                serif('bold',13,GOLD); txt(title, PW/2, 12, {align:'center'});
+                // Subtitle
+                sans('normal',7.5,[210,195,155]); txt(`Onboarding Status Report  •  Generated: ${genDate}`, PW/2, 19, {align:'center'});
+                // Page indicator
+                sans('normal',7,GOLD_DIM); txt(`Page ${pageNum} of ${totalPages}`, PW-MR, 25, {align:'right'});
+                // Gold rule
+                setDraw(GOLD); doc.setLineWidth(0.6); line(0,28,PW,28);
+                // LIVE DASHBOARD EXPORT ribbon
+                setFill([255,255,255,0.05]); 
+                sans('bold',6.5,[180,165,120]); txt('LIVE DASHBOARD EXPORT', PW/2, 33, {align:'center'});
+                sans('normal',6,[140,130,100]); txt('Training & Onboarding Dashboard  •  Confidential', PW/2, 37, {align:'center'});
+                setDraw([201,168,76,0.3]); doc.setLineWidth(0.2); line(ML,39,PW-MR,39);
+            };
+
+            const drawPageFooter = (pageNum, totalPages) => {
+                const fy = PH - 10;
+                setDraw(GOLD); doc.setLineWidth(0.3); line(ML,fy-3,PW-MR,fy-3);
+                serif('bold',8,NAVY); txt('Chandra Kanthan G', PW-MR, fy, {align:'right'});
+                sans('normal',6.5,DGRAY); txt('Team Coordinator — Training  |  Chandra@gnbproperty.com', PW-MR, fy+4, {align:'right'});
+                sans('normal',6,[180,180,180]); txt(`Page ${pageNum}`, ML, fy+2);
+            };
+
+            const drawStatCards = (cards, py) => {
+                const cardW = (PW - ML - MR - (cards.length-1)*5) / cards.length;
+                cards.forEach((c, i) => {
+                    const cx = ML + i*(cardW+5);
+                    // Card bg with gradient
+                    for(let g=0;g<20;g++){
+                        const t=g/19;
+                        const r=Math.round(c.from[0]+(WHITE[0]-c.from[0])*t);
+                        const gr=Math.round(c.from[1]+(WHITE[1]-c.from[1])*t);
+                        const b=Math.round(c.from[2]+(WHITE[2]-c.from[2])*t);
+                        doc.setFillColor(r,gr,b); rect(cx, py+(20/20)*g, cardW, 20/20+0.5);
+                    }
+                    setDraw([200,205,215]); doc.setLineWidth(0.4); doc.roundedRect(cx, py, cardW, 20, 2, 2, 'S');
+                    serif('bold',18,c.valColor); txt(String(c.value), cx+cardW/2, py+12, {align:'center'});
+                    sans('bold',6,c.lblColor); txt(c.label.toUpperCase(), cx+cardW/2, py+18, {align:'center'});
+                });
+                return py + 24;
+            };
+
+            const drawTableSection = (data, columns, py) => {
+                const usableW = PW - ML - MR;
+                const colWidths = columns.map(c => c.w * usableW);
+                // Header row
+                setFill(NAVY); rect(ML, py, usableW, 7);
+                let cx = ML;
+                columns.forEach((col, i) => {
+                    sans('bold',6.5,GOLD); txt(col.label, cx+2, py+5);
+                    cx += colWidths[i];
+                });
+                py += 7;
+                // Data rows
+                data.forEach((row, idx) => {
+                    const rowH = 8;
+                    if (idx % 2 === 0) { setFill([245,247,250]); } else { setFill(WHITE); }
+                    rect(ML, py, usableW, rowH);
+                    // Bottom border
+                    setDraw([220,224,230]); doc.setLineWidth(0.1); line(ML, py+rowH, ML+usableW, py+rowH);
+                    cx = ML;
+                    columns.forEach((col, i) => {
+                        const val = String(col.get(row) || '');
+                        sans('normal', 7, DGRAY);
+                        if (col.bold) { sans('bold', 7, NAVY); }
+                        // Trend colour
+                        if (col.trend) {
+                            if(val.includes('▲')) doc.setTextColor(...GREEN);
+                            else if(val.includes('▼')) doc.setTextColor(...RED);
+                        }
+                        // Week badge colour
+                        if (col.weekBadge) {
+                            const wk = parseInt(val);
+                            const bColor = wk >= 4 ? RED : (wk >= 2 ? ORANGE : GREEN);
+                            setFill(bColor); doc.roundedRect(cx+1, py+1.5, colWidths[i]-3, 5, 1.5, 1.5, 'F');
+                            doc.setTextColor(255,255,255); sans('bold',6.5,[255,255,255]);
+                            txt(val, cx+colWidths[i]/2, py+5.3, {align:'center'});
+                            cx += colWidths[i]; return;
+                        }
+                        const lines = doc.splitTextToSize(val, colWidths[i]-4);
+                        txt(lines[0], cx+2, py+5.5);
+                        cx += colWidths[i];
+                    });
+                    py += rowH;
+                });
+                return py + 4;
+            };
+
+            // ── PAGE 1: AWAITING ONBOARDING ──
+            drawPageHeader('Awaiting Onboarding (Training Completed)', 1, 2);
+            let py = 44;
+
+            // Stats
+            const awaitTrainers = new Set(awaiting.map(r=>r[1])).size;
+            const awaitWeeks = awaiting.map(r=>ob_calcWeeks(r[8]));
+            const avgAwaitWeeks = awaiting.length ? (awaitWeeks.reduce((a,b)=>a+b,0)/awaiting.length).toFixed(1) : '0';
+            py = drawStatCards([
+                { value: awaiting.length, label: 'Clients Awaiting', from: NAVY_LIGHT, valColor: NAVY, lblColor: [40,60,100] },
+                { value: awaitTrainers,   label: 'Trainers Involved', from: [26,100,80], valColor: [10,70,50], lblColor: [30,90,65] },
+                { value: avgAwaitWeeks,   label: 'Avg. Weeks Stalled', from: [160,40,20], valColor: [120,20,10], lblColor: [150,35,25] }
+            ], py);
+
+            // Section title
+            setDraw(GOLD); doc.setLineWidth(0.3); line(ML, py, PW-MR, py);
+            sans('bold',7.5,NAVY); txt('CLIENT DETAILS', ML, py+5);
+            py += 8;
+
+            // Table
+            const awaitCols = [
+                { label:'Client Name', w:0.22, get:r=>r[0], bold:true },
+                { label:'Trainer',     w:0.14, get:r=>r[1] },
+                { label:'Last Week',   w:0.13, get:r=>String(r[6]||'0h 0m') },
+                { label:'Current Week',w:0.14, get:r=>String(r[7]||'0h 0m') },
+                { label:'Trend',       w:0.15, get:r=>{ const lM=ob_timeToMinutes(r[6]),cM=ob_timeToMinutes(r[7]); if(!lM&&!cM) return '─'; const pc=lM===0?100:Math.round(((cM-lM)/lM)*100); return pc>=0?`▲ +${pc}%`:`▼ ${pc}%`; }, trend:true },
+                { label:'Weeks in Onboarding', w:0.22, get:r=>ob_calcWeeks(r[8])+' Weeks', weekBadge:true }
+            ];
+            py = drawTableSection(awaiting, awaitCols, py);
+            drawPageFooter(1, 2);
+
+            // ── PAGE 2: TRAINING IN PROGRESS ──
+            doc.addPage();
+            drawPageHeader('Training In Progress', 2, 2);
+            py = 44;
+
+            const tipTrainers = new Set(trainingIP.map(r=>r[1])).size;
+            const tipWeeks = trainingIP.map(r=>ob_calcWeeks(r[8]));
+            const avgTipWeeks = trainingIP.length ? (tipWeeks.reduce((a,b)=>a+b,0)/trainingIP.length).toFixed(1) : '0';
+            py = drawStatCards([
+                { value: trainingIP.length, label: 'Clients in Training', from: [160,40,20], valColor: [120,20,10], lblColor: [150,35,25] },
+                { value: tipTrainers,        label: 'Trainers Active',    from: [26,100,80], valColor: [10,70,50], lblColor: [30,90,65] },
+                { value: avgTipWeeks,         label: 'Avg. Weeks Training', from: NAVY_LIGHT, valColor: NAVY, lblColor: [40,60,100] }
+            ], py);
+
+            setDraw(GOLD); doc.setLineWidth(0.3); line(ML, py, PW-MR, py);
+            sans('bold',7.5,NAVY); txt('CLIENT DETAILS', ML, py+5);
+            py += 8;
+
+            const tipCols = [
+                { label:'Client Name',   w:0.22, get:r=>r[0], bold:true },
+                { label:'Trainer',       w:0.14, get:r=>r[1] },
+                { label:'Last Week',     w:0.13, get:r=>String(r[6]||'0h 0m') },
+                { label:'Current Week',  w:0.14, get:r=>String(r[7]||'0h 0m') },
+                { label:'Trend',         w:0.15, get:r=>{ const lM=ob_timeToMinutes(r[6]),cM=ob_timeToMinutes(r[7]); if(!lM&&!cM) return '─'; const pc=lM===0?100:Math.round(((cM-lM)/lM)*100); return pc>=0?`▲ +${pc}%`:`▼ ${pc}%`; }, trend:true },
+                { label:'Weeks in Onboarding', w:0.22, get:r=>ob_calcWeeks(r[8])+' Weeks', weekBadge:true }
+            ];
+            py = drawTableSection(trainingIP, tipCols, py);
+            drawPageFooter(2, 2);
+
+            doc.save(filename);
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> Export PDF`;
+            btn.disabled = false;
+        }
+
+    /* == INIT == */
+        // Loading screen: dismiss once both data sources have responded
+        let _lsReady = 0;
+        function ls_ready() {
+            _lsReady++;
+            if (_lsReady >= 2) {
+                setTimeout(() => document.getElementById('loading-screen').classList.add('hidden'), 400);
+            }
+        }
+        // Safety fallback — hide after 8s regardless
+        setTimeout(() => document.getElementById('loading-screen').classList.add('hidden'), 8000);
+
+        fetchData();
+        ob_initDashboard();
+        renderCalendar();
+
+    </script>
+</body>
+</html>
